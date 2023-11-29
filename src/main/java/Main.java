@@ -1,4 +1,5 @@
 import dataaccess.MySQLDatabaseConnection;
+import ui.Cli;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,7 +7,9 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello world");
+
+        Cli myCli = new Cli();
+        myCli.start();
 
         try {
             Connection myConnection =
