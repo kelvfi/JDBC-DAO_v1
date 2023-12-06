@@ -14,12 +14,39 @@ public class MySQLCourseRepository implements MyCourseRepository {
     private Connection con;
 
     public MySQLCourseRepository() throws SQLException, ClassNotFoundException {
-        this.con = MySQLDatabaseConnection.getConnection("jdbc:mysql://localhost:3306/kurssystem", "root", "");
+        this.con = MySQLDatabaseConnection.getConnection("jdbc:mysql://localhost:6033/kurssystem", "root", "1234");
     }
 
     @Override
     public Optional<Course> insert(Course entity) {
-        return Optional.empty();
+        Assert.notNull(entity);
+
+        try {
+            String sql = "INSERT INTO `courses` (`name`, `description`, `hours`, `begindate`, `enddate`, `coursetype`) VALUES (?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, entity.getName()); // Holen aus den kurs ein Statement heraus und belegen somit das SQL Statement
+            preparedStatement.setString(2, entity.getDescription());
+            preparedStatement.setInt(3, entity.getHours());
+            preparedStatement.setDate(4, entity.getBeginDate());
+            preparedStatement.setDate(5, entity.getEndDate());
+            preparedStatement.setString(6, entity.getCourseType().toString()); // Enumerationstyp deswegen to String
+
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                return Optional.empty();
+            }
+
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return this.getById(generatedKeys.getLong(1)); // Hier holt man sich den gereratedKey
+            } else {
+                return Optional.empty();
+            }
+
+        } catch (SQLException sqlException) {
+            throw new DatabaseException(sqlException.getMessage());
+        }
     }
 
     @Override
