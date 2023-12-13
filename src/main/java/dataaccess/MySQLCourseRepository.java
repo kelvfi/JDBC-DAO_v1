@@ -39,7 +39,10 @@ public class MySQLCourseRepository implements MyCourseRepository {
 
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                return this.getById(generatedKeys.getLong(1)); // Hier holt man sich den gereratedKey
+                Long id = generatedKeys.getLong(1);
+                if (id !=  null) {
+                    return this.getById(id);
+                }
             } else {
                 return Optional.empty();
             }
@@ -47,6 +50,7 @@ public class MySQLCourseRepository implements MyCourseRepository {
         } catch (SQLException sqlException) {
             throw new DatabaseException(sqlException.getMessage());
         }
+        return Optional.empty();
     }
 
     @Override
@@ -123,7 +127,38 @@ public class MySQLCourseRepository implements MyCourseRepository {
 
     @Override
     public Optional<Course> update(Course entity) {
-        return Optional.empty();
+
+        Assert.notNull(entity);
+
+        String sql = "UPDATE `courses` SET `name` = ?, `description` = ?, `hours` = ?, `begindate` = ?, `enddate` = ?, `coursetype` = ? WHERE `courses`.`id` = ?";
+        if (countCoursesInDbWithId(entity.getId())==0) {
+            return Optional.empty();
+        } else {
+            try {
+
+                PreparedStatement preparedStatement = con.prepareStatement(sql);
+                preparedStatement.setString(1, entity.getName());
+                preparedStatement.setString(2, entity.getDescription());
+                preparedStatement.setInt(3, entity.getHours());
+                preparedStatement.setDate(4, entity.getBeginDate());
+                preparedStatement.setDate(5, entity.getEndDate());
+                preparedStatement.setString(6, entity.getCourseType().toString());
+                preparedStatement.setLong(7, entity.getId());
+
+                int affectedRows = preparedStatement.executeUpdate();
+
+                if (affectedRows == 0) {
+                    return Optional.empty();
+                } else {
+                    return this.getById(entity.getId());
+                }
+
+
+
+            } catch (SQLException sqlException) {
+                throw new DatabaseException(sqlException.getMessage());
+            }
+        }
     }
 
     @Override
