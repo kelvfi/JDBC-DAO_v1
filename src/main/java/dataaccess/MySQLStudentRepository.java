@@ -214,29 +214,6 @@ public class MySQLStudentRepository implements MyStudentRepository {
         }
     }
 
-    @Override
-    public List<Student> searchID(Date searchID) {
-        try {
-            String sql = "SELECT * FROM `student` WHERE LOWER(`id`) LIKE LOWER(?)";
-
-            PreparedStatement preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setString(1, "%"+searchID+"%");
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            ArrayList<Student> studentList = new ArrayList<>();
-
-            while (resultSet.next()) {
-                studentList.add(new Student(
-                        resultSet.getLong("id"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname"),
-                        resultSet.getDate("gebDate")
-                ));
-            }
-            return studentList;
-        } catch (SQLException sqlException) {
-            throw new DatabaseException(sqlException.getMessage());
-        }
-    }
+    // Muss noch ein 3. HER!!
 
 }

@@ -3,9 +3,11 @@ package ui;
 import dataaccess.DatabaseException;
 import dataaccess.MyCourseRepository;
 import dataaccess.MySQLCourseRepository;
+import dataaccess.MyStudentRepository;
 import domain.Course;
 import domain.CourseType;
 import domain.InvalidValueException;
+import domain.Student;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.Scanner;
 public class Cli {
 
     MyCourseRepository repo;
+    MyStudentRepository sepo;
     Scanner scan;
 
     public Cli(MySQLCourseRepository repo) { // Zugriff gamapt
@@ -45,10 +48,26 @@ public class Cli {
                     break;
                 case "5":
                     deleteCourse();
+                    break;
                 case "6":
                     courseSearch();
                 case "7":
                     runningCourses();
+                    break;
+                case "a":
+                    addStudent();
+                    break;
+                case "b":
+                    showAllStudents();
+                    break;
+                case "c":
+                    showStudentDetails();
+                    break;
+                case "d":
+                    updateStudent();
+                    break;
+                case "e":
+                    deleteStudent();
                     break;
                 case "x":
                     System.out.println("Auf Wiedersehen!");
@@ -59,6 +78,146 @@ public class Cli {
             }
         }
         scan.close();
+    }
+
+    private void deleteStudent() {
+        System.out.println("Welchen Student möchten sie Löschen bitte ID eingeben: ");
+        Long studentIdToDelete = Long.parseLong(scan.nextLine());
+
+        try {
+            sepo.deleteById(studentIdToDelete);
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler beim löschen: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
+    }
+
+    private void updateStudent() {
+        System.out.println("Für welche Student-ID möchten sie die Details ändern?");
+        Long courseId = Long.parseLong(scan.nextLine());
+
+        try {
+            Optional<Student> studentOptional = sepo.getById(courseId);
+            if (studentOptional.isEmpty()) {
+                System.out.println("Student mit der Gegebenen ID nicht in der Datenbank!");
+            } else {
+                Student student = studentOptional.get();
+
+                System.out.println("Änderungen für folgenden Student: ");
+                System.out.println(student);
+
+                String firstname, lastname, gebDate;
+
+                System.out.println("Bitte neue Kursdaten angeben (ENTER, falls keine Änderung gewünscht ist!)");
+                System.out.println("Vorname: ");
+                firstname = scan.nextLine();
+                System.out.println("Nachname: ");
+                lastname = scan.nextLine();
+                System.out.println("Geburtsdatum (YYYY-MM-DD): ");
+                gebDate = scan.nextLine();
+
+                Optional<Student> optionalStudentUpdated = sepo.update(
+                        new Student(
+                                student.getId(),
+                                firstname.equals("") ? student.getFirstname() : firstname,
+                                lastname.equals("") ? student.getLastname() : lastname,
+                                gebDate.equals("") ? student.getGebDate() : Date.valueOf(gebDate)
+                        )
+                );
+
+                // Man gibt hier 2x Funktionen mit also wie mit if/else
+                optionalStudentUpdated.ifPresentOrElse(
+                        (c)-> System.out.println("Student Aktuallisiert" + c),
+                        ()-> System.out.println("Student konnte nicht Aktuallisiert werden!")
+                );
+            }
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.println("Eingabefehler: "+illegalArgumentException.getMessage());
+        } catch (InvalidValueException invalidValueException) {
+            System.out.println("Kursdaten nicht korrekt angegeben: "+invalidValueException.getMessage()); // Z.B. Enddatum vor Beginndatum
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler beim Einfügen: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
+    }
+
+    private void addStudent() {
+        String firstname, lastname;
+        Date gebDate;
+
+        try {
+            System.out.println("Bitte alle Studentendaten angeben: ");
+
+            System.out.println("Vorname: ");
+            firstname = scan.nextLine();
+            if (firstname.equals("")) throw new IllegalArgumentException("Eingabe darf nicht leer sein!");
+
+            System.out.println("Nachname: ");
+            lastname = scan.nextLine();
+            if (lastname.equals("")) throw new IllegalArgumentException("Eingabe darf nicht leer sein!");
+
+            System.out.println("Geburtsdatum (YYYY-MM-DD): ");
+            gebDate = Date.valueOf(scan.nextLine());
+
+            Optional<Student> studentOptional = sepo.insert(
+                    new Student(firstname,lastname,gebDate)
+            );
+
+            if (studentOptional.isPresent()) {
+                System.out.println("Student angelegt: "+studentOptional.get());
+            } else {
+                System.out.println("Student konnte nicht angelegt werden.");
+            }
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.println("Eingabefehler: "+illegalArgumentException.getMessage());
+        } catch (InvalidValueException invalidValueException) {
+            System.out.println("Studentendaten nicht korrekt angegeben: "+invalidValueException.getMessage()); // Z.B. Enddatum vor Beginndatum
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler beim Einfügen: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
+    }
+
+    private void showStudentDetails() {
+        System.out.println("Für welchen Kurs möchten sie die Studentendetails anzeigen?");
+        Long studentID = Long.parseLong(scan.nextLine());
+
+        try {
+            Optional<Student> studentOptional = sepo.getById(studentID);
+            if (studentOptional.isPresent()) {
+                System.out.println(studentOptional.get());
+            } else {
+                System.out.println("Student mit der ID: "+studentID+ " nicht gefunden!");
+            }
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler bei Kurs-Detail-Anfrage: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler bei Kurs-Detail-Anzeige: "+exception.getMessage());
+        }
+    }
+
+    private void showAllStudents() {
+        List<Student> list = null;
+
+        try {
+            list = sepo.getAll();
+            if (list.size() > 0) {
+                for (Student student : list) { // Mapping generiert durch "Course" | Wie ein riesen speicher fungiert es.
+                    System.out.println(student);
+                }
+            } else {
+                System.out.println("Studentenliste leer!");
+            }
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler bei Anzeige aller Studenten: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter fehler bei Anzeige aller Studenten: "+exception.getMessage());
+        }
     }
 
     private void runningCourses() {
