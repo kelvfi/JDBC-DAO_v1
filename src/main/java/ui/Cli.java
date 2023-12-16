@@ -262,10 +262,15 @@ public class Cli {
     }
 
     private void showMenue() {
-        System.out.println("-------------------------------- KURSMANAGEMENT --------------------------------");
+        System.out.println("---------------------------------- KURSMANAGEMENT ---------------------------------");
         System.out.println("(1) Kurs eingeben \t (2) Alle Kurse anzeigen \t"+"(3) Kursdatails anzeigen");
         System.out.println("(4) Kursdetails ändern \t (5) Kurs löschen \t"+"(6) Kurssuche");
-        System.out.println("(7) Kursdetails ändern \t (-) xxxn \t"+"(-) xxx");
+        System.out.println("(7) Laufende Kurse");
+        System.out.println("(x) ENDE");
+        System.out.println("--------------------------------- STUDENTMANAGEMENT --------------------------------");
+        System.out.println("(a) Student eingeben \t (b) Alle Studenten anzeigen \t"+"(c) Studentendetails anzeigen");
+        System.out.println("(d) Studentendetails ändern \t (e) Student löschen \t"+"(f) Nach ID suchen");
+        System.out.println("(g) Nach Namen suchen \t (h) Nach Geburtsdatum suchen \t");
         System.out.println("(x) ENDE");
     }
 

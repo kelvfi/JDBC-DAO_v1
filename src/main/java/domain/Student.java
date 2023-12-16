@@ -27,7 +27,7 @@ public class Student extends BaseEntity {
     }
 
     public void setFirstname(String firstname) {
-        if (firstname == null) {
+        if (firstname.length() != 0) {
             this.firstname = firstname;
         } else {
             throw new InvalidValueException("Vorname darf nicht leer sein!");
@@ -40,7 +40,7 @@ public class Student extends BaseEntity {
     }
 
     public void setLastname(String lastname) {
-        if (lastname == null) {
+        if (lastname.length() != 0) {
             this.lastname = lastname;
         } else {
             throw new InvalidValueException("Nachname darf nicht leer sein!");
