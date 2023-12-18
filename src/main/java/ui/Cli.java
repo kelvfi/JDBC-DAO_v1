@@ -1,9 +1,6 @@
 package ui;
 
-import dataaccess.DatabaseException;
-import dataaccess.MyCourseRepository;
-import dataaccess.MySQLCourseRepository;
-import dataaccess.MyStudentRepository;
+import dataaccess.*;
 import domain.Course;
 import domain.CourseType;
 import domain.InvalidValueException;
@@ -21,9 +18,10 @@ public class Cli {
     MyStudentRepository sepo;
     Scanner scan;
 
-    public Cli(MySQLCourseRepository repo) { // Zugriff gamapt
+    public Cli(MySQLCourseRepository repo, MySQLStudentRepository sepo) { // Zugriff gamapt
         this.scan = new Scanner(System.in);
         this.repo = repo;
+        this.sepo = sepo;
     }
 
     public void start() {
@@ -91,10 +89,10 @@ public class Cli {
 
     private void searchGebBetween() {
         System.out.println("Bitte geben sie das erste Datum ein: ");
-        Date first = Date.valueOf(scan.nextLine());
+        String first = scan.nextLine();
 
         System.out.println("Bitte geben sie das zweite Datum ein: ");
-        Date second = Date.valueOf(scan.nextLine());
+        String second = scan.nextLine();
 
         try {
             sepo.searchGebBetween(first, second);
@@ -107,7 +105,7 @@ public class Cli {
 
     private void searchGeb() {
         System.out.println("Bitte geben die das Datum ein (YYYY-MM-DD): ");
-        Date datum = Date.valueOf(scan.nextLine());
+        String datum = scan.nextLine();
 
         try {
             sepo.searchGeb(datum);
@@ -121,9 +119,15 @@ public class Cli {
     private void searchName() {
         System.out.println("Bitte geben sie den Namen ein:");
         String name = scan.nextLine();
+        List<Student> studentList;
 
         try {
-            sepo.searchName(name);
+            studentList = sepo.searchName(name);
+
+            for (Student student : studentList) {
+                System.out.println(student);
+            }
+
         } catch (DatabaseException databaseException) {
             System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
         } catch (Exception exception) {

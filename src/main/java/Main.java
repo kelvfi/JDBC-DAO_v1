@@ -1,5 +1,6 @@
 import dataaccess.MySQLCourseRepository;
 import dataaccess.MySQLDatabaseConnection;
+import dataaccess.MySQLStudentRepository;
 import domain.Student;
 import ui.Cli;
 
@@ -12,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            Cli myCli = new Cli(new MySQLCourseRepository());
+            Cli myCli = new Cli(new MySQLCourseRepository(), new MySQLStudentRepository());
             myCli.start();
         } catch (SQLException e) {
             System.out.println("Datenbankfehler: "+e.getMessage()+" SQL-State: "+e.getSQLState());

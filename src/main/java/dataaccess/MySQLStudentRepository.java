@@ -64,7 +64,7 @@ public class MySQLStudentRepository implements MyStudentRepository {
                 resultSet.next();
                 Student student = new Student (
                         resultSet.getLong("id"),
-                        resultSet.getString("fistname"),
+                        resultSet.getString("firstname"),
                         resultSet.getString("lastname"),
                         resultSet.getDate("gebDate")
                 );
@@ -102,7 +102,7 @@ public class MySQLStudentRepository implements MyStudentRepository {
             while (resultSet.next()) {
                 studentList.add(new Student(
                                 resultSet.getLong("id"),
-                                resultSet.getString("fistname"),
+                                resultSet.getString("firstname"),
                                 resultSet.getString("lastname"),
                                 resultSet.getDate("gebDate")
                         )
@@ -190,12 +190,12 @@ public class MySQLStudentRepository implements MyStudentRepository {
     }
 
     @Override
-    public List<Student> searchGeb(Date searchDate) {
+    public List<Student> searchGeb(String searchDate) {
         try {
             String sql = "SELECT * FROM `student` WHERE `gebDate` LIKE ?";
 
             PreparedStatement preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setDate(1, searchDate);
+            preparedStatement.setString(1, searchDate);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             ArrayList<Student> studentList = new ArrayList<>();
@@ -215,13 +215,13 @@ public class MySQLStudentRepository implements MyStudentRepository {
     }
 
     @Override
-    public List<Student> searchGebBetween(Date fist, Date second) {
+    public List<Student> searchGebBetween(String first, String second) {
         String sql = "SELECT * FROM `student` WHERE gebDate BETWEEN ? and ?";
 
         try {
             PreparedStatement preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setDate(1, fist);
-            preparedStatement.setDate(2, second);
+            preparedStatement.setString(1, first);
+            preparedStatement.setString(2, second);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             ArrayList<Student> studentList = new ArrayList<>();
