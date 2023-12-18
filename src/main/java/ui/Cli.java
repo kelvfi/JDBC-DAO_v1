@@ -69,6 +69,15 @@ public class Cli {
                 case "e":
                     deleteStudent();
                     break;
+                case "f":
+                    searchName();
+                    break;
+                case "g":
+                    searchGeb();
+                    break;
+                case "h":
+                    searchGebBetween();
+                    break;
                 case "x":
                     System.out.println("Auf Wiedersehen!");
                     break;
@@ -78,6 +87,48 @@ public class Cli {
             }
         }
         scan.close();
+    }
+
+    private void searchGebBetween() {
+        System.out.println("Bitte geben sie das erste Datum ein: ");
+        Date first = Date.valueOf(scan.nextLine());
+
+        System.out.println("Bitte geben sie das zweite Datum ein: ");
+        Date second = Date.valueOf(scan.nextLine());
+
+        try {
+            sepo.searchGebBetween(first, second);
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
+    }
+
+    private void searchGeb() {
+        System.out.println("Bitte geben die das Datum ein (YYYY-MM-DD): ");
+        Date datum = Date.valueOf(scan.nextLine());
+
+        try {
+            sepo.searchGeb(datum);
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
+    }
+
+    private void searchName() {
+        System.out.println("Bitte geben sie den Namen ein:");
+        String name = scan.nextLine();
+
+        try {
+            sepo.searchName(name);
+        } catch (DatabaseException databaseException) {
+            System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
+        } catch (Exception exception) {
+            System.out.println("Unbekannter Fehler: "+exception.getMessage());
+        }
     }
 
     private void deleteStudent() {
@@ -428,8 +479,8 @@ public class Cli {
         System.out.println("(x) ENDE");
         System.out.println("--------------------------------- STUDENTMANAGEMENT --------------------------------");
         System.out.println("(a) Student eingeben \t (b) Alle Studenten anzeigen \t"+"(c) Studentendetails anzeigen");
-        System.out.println("(d) Studentendetails ändern \t (e) Student löschen \t"+"(f) Nach ID suchen");
-        System.out.println("(g) Nach Namen suchen \t (h) Nach Geburtsdatum suchen \t");
+        System.out.println("(d) Studentendetails ändern \t (e) Student löschen \t"+ "(f) Nach Namen suchen");
+        System.out.println("(g) Nach Geburtsdatum suchen \t (h) Nach Geburtsdatum zwischen zwischen zwei Daten suchen \t");
         System.out.println("(x) ENDE");
     }
 

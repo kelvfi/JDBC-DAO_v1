@@ -192,10 +192,10 @@ public class MySQLStudentRepository implements MyStudentRepository {
     @Override
     public List<Student> searchGeb(Date searchDate) {
         try {
-            String sql = "SELECT * FROM `student` WHERE LOWER(`gebDate`) LIKE LOWER(?)";
+            String sql = "SELECT * FROM `student` WHERE `gebDate` LIKE ?";
 
             PreparedStatement preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setString(1, "%"+searchDate+"%");
+            preparedStatement.setDate(1, searchDate);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             ArrayList<Student> studentList = new ArrayList<>();
@@ -214,6 +214,30 @@ public class MySQLStudentRepository implements MyStudentRepository {
         }
     }
 
-    // Muss noch ein 3. HER!!
+    @Override
+    public List<Student> searchGebBetween(Date fist, Date second) {
+        String sql = "SELECT * FROM `student` WHERE gebDate BETWEEN ? and ?";
 
+        try {
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setDate(1, fist);
+            preparedStatement.setDate(2, second);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            ArrayList<Student> studentList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                studentList.add(new Student(
+                        resultSet.getLong("id"),
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getDate("gebDate")
+                ));
+            }
+            return studentList;
+
+        } catch (SQLException sqlException) {
+            throw new DatabaseException(sqlException.getMessage());
+        }
+    }
 }
