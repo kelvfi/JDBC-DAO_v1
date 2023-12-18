@@ -94,8 +94,15 @@ public class Cli {
         System.out.println("Bitte geben sie das zweite Datum ein: ");
         String second = scan.nextLine();
 
+        List<Student> studentList;
+
         try {
-            sepo.searchGebBetween(first, second);
+            studentList = sepo.searchGebBetween(first, second);
+
+            for (Student student : studentList) {
+                System.out.println(student);
+            }
+
         } catch (DatabaseException databaseException) {
             System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
         } catch (Exception exception) {
@@ -106,9 +113,15 @@ public class Cli {
     private void searchGeb() {
         System.out.println("Bitte geben die das Datum ein (YYYY-MM-DD): ");
         String datum = scan.nextLine();
+        List<Student> studentList;
 
         try {
-            sepo.searchGeb(datum);
+            studentList = sepo.searchGeb(datum);
+
+            for (Student student : studentList) {
+                System.out.println(student);
+            }
+
         } catch (DatabaseException databaseException) {
             System.out.println("Datenbankfehler bei der Suche: "+databaseException.getMessage());
         } catch (Exception exception) {
@@ -117,7 +130,7 @@ public class Cli {
     }
 
     private void searchName() {
-        System.out.println("Bitte geben sie den Namen ein:");
+        System.out.println("Bitte geben sie den Buchstaben ein:");
         String name = scan.nextLine();
         List<Student> studentList;
 
@@ -483,7 +496,7 @@ public class Cli {
         System.out.println("(x) ENDE");
         System.out.println("--------------------------------- STUDENTMANAGEMENT --------------------------------");
         System.out.println("(a) Student eingeben \t (b) Alle Studenten anzeigen \t"+"(c) Studentendetails anzeigen");
-        System.out.println("(d) Studentendetails ändern \t (e) Student löschen \t"+ "(f) Nach Namen suchen");
+        System.out.println("(d) Studentendetails ändern \t (e) Student löschen \t"+ "(f) Nach Buchstaben suchen");
         System.out.println("(g) Nach Geburtsdatum suchen \t (h) Nach Geburtsdatum zwischen zwischen zwei Daten suchen \t");
         System.out.println("(x) ENDE");
     }
